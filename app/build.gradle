@@ -41,6 +41,9 @@ android {
 			version '3.22.1'
 		}
 	}
+	buildFeatures {
+		viewBinding true
+	}
 }
 
 dependencies {
@@ -49,7 +52,24 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.8.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+
+	// region lifecycle
+	implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.1'
+	implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
+	// endregion
+
+	// region navigation component
+	implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
+	implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
+	// endregion
+
+
+	// region test dependencies
     testImplementation 'junit:junit:4.13.2'
+	// endregion
+
+	// region android test dependencies
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+	// endregion
 }

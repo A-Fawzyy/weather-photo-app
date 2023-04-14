@@ -1,3 +1,18 @@
 <resources>
-    <string name="app_name">Weather Picture App</string>
+	<string name="app_name">Weather Picture App</string>
+
+	<string name="history">History</string>
+
+	<!--region actions-->
+	<string name="action_search">Search</string>
+	<string name="action_settings">Settings</string>
+	<!--endregion-->
+
+	<!--region content descriptions-->
+	<string name="content_description_app_logo">Application logo which shows an image of a camera</string>
+	<string name="content_description_action_search">search your weather pictures</string>
+	<string name="content_description_action_settings">App Settings</string>
+	<string name="content_description_fab_add_weather_photo">Add Weather Photo</string>
+	<!--endregion-->
 </resources>
+
