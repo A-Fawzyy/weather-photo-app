@@ -96,6 +96,10 @@ dependencies {
 	implementation "androidx.camera:camera-view:$camerax_version"
 	// endregion
 
+	// region shared preferences
+	implementation 'androidx.preference:preference-ktx:1.2.0'
+	// endregion
+
 	//  region image loading libs
 	implementation 'com.github.bumptech.glide:glide:4.15.1'
 	// endregion
