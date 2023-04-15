@@ -1,18 +1,21 @@
 <resources>
-	<string name="app_name">Weather Picture App</string>
+    <string name="app_name">Weather Picture App</string>
 
-	<string name="history">History</string>
+    <string name="history">History</string>
 
-	<!--region actions-->
-	<string name="action_search">Search</string>
-	<string name="action_settings">Settings</string>
-	<!--endregion-->
+    <!--region actions-->
+    <string name="action_search">Search</string>
+    <string name="action_settings">Settings</string>
+    <!--endregion-->
 
-	<!--region content descriptions-->
-	<string name="content_description_app_logo">Application logo which shows an image of a camera</string>
-	<string name="content_description_action_search">search your weather pictures</string>
-	<string name="content_description_action_settings">App Settings</string>
-	<string name="content_description_fab_add_weather_photo">Add Weather Photo</string>
+    <!--region content descriptions-->
+    <string name="content_description_app_logo">Application logo which shows an image of a camera</string>
+    <string name="content_description_action_search">search your weather pictures</string>
+    <string name="content_description_action_settings">App Settings</string>
+    <string name="content_description_fab_add_weather_photo">Add Weather Photo</string>
+    <string name="capture">Capture</string>
+	<string name="permissions_not_granted_by_the_user">Permissions not granted by the user.</string>
+	<string name="please_turn_on_location">Please, turn on location</string>
 	<!--endregion-->
 </resources>
 
