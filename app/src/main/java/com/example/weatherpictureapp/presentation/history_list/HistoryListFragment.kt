@@ -18,22 +18,31 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.location.LocationManagerCompat.isLocationEnabled
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
 import com.example.weatherpictureapp.R
 import com.example.weatherpictureapp.databinding.FragmentHistoryListBinding
+import com.example.weatherpictureapp.domain.network_result.NetworkResult
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class HistoryListFragment : Fragment() {
 
 	private var _binding: FragmentHistoryListBinding? = null
 	private val binding get() = _binding!!
+
+	lateinit var viewModel : HistoryListViewModel
 
 	private val fusedLocationProviderClient: FusedLocationProviderClient by lazy {
 		LocationServices.getFusedLocationProviderClient(requireContext())
@@ -47,7 +56,8 @@ class HistoryListFragment : Fragment() {
 	override fun onCreateView(
 		inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
 	): View {
-		val homeViewModel = ViewModelProvider(this)[HistoryListViewModel::class.java]
+
+		viewModel = ViewModelProvider(this)[HistoryListViewModel::class.java]
 
 		_binding = FragmentHistoryListBinding.inflate(inflater, container, false)
 
@@ -58,6 +68,44 @@ class HistoryListFragment : Fragment() {
 		super.onViewCreated(view, savedInstanceState)
 		binding.fabAddWeatherPhoto.setOnClickListener {
 			requestNeededPermissions()
+		}
+
+		viewModel.getWeatherPhotoList()
+
+		collectState()
+	}
+
+	private fun collectState() {
+		binding.apply {
+			viewLifecycleOwner.lifecycleScope.launch {
+				viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+					viewModel.weatherPhotosUriList.collect { data ->
+						when (data) {
+							is NetworkResult.Loading -> {
+								progressIndicator.isVisible = true
+							}
+
+							is NetworkResult.Success -> {
+								progressIndicator.isVisible = false
+								recyclerViewHistory.adapter =
+									WeatherPhotoAdapter(data.value)
+							}
+
+							is NetworkResult.Error -> {
+								progressIndicator.isVisible = false
+								Snackbar.make(
+									binding.root,
+									data.error.message
+										?: getString(R.string.unexpected_error_message),
+									Snackbar.LENGTH_INDEFINITE
+								).apply {
+									show()
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 

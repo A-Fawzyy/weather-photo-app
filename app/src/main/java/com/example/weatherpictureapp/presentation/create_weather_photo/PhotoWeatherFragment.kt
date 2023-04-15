@@ -35,7 +35,6 @@ import java.io.File
 class PhotoWeatherFragment : Fragment() {
 
 	private lateinit var viewModel: PhotoWeatherViewModel
-	private lateinit var snackbar: Snackbar
 
 	private var _binding: FragmentPhotoWeatherBinding? = null
 	private val binding get() = _binding!!
@@ -59,36 +58,47 @@ class PhotoWeatherFragment : Fragment() {
 		)
 
 		binding.fabShareImage.setOnClickListener {
-			captureAndShareView()
+			captureAndShareWeatherPhoto()
+		}
+
+		binding.fabSaveImage.setOnClickListener {
+			captureAndShareWeatherPhoto(true)
 		}
 
 		collectStates()
 	}
 
-	private fun captureAndShareView() {
+	private fun captureAndShareWeatherPhoto(shouldSave: Boolean = false) {
 		binding.fabShareImage.isVisible = false
 		binding.constraintLayoutWeatherPhoto.captureView().let { bitmap ->
-			saveAndShareCapturedView(bitmap)
+			saveBitmap(bitmap) {
+				if(shouldSave) {
+					viewModel.saveWeatherPhoto(it)
+				} else {
+					shareImage(it, requireContext())
+				}
+			}
 			binding.fabShareImage.isVisible = true
 		}
 	}
 
-	private fun saveAndShareCapturedView(bitmap: Bitmap) {
+	private fun saveBitmap(bitmap: Bitmap, callBack: (File) -> Unit) {
 		lifecycleScope.launch(Dispatchers.IO) {
 			safeArgs.photoUri?.let {
 				saveImageToStorage(bitmap, requireContext(), it) { file ->
-					shareImage(file, requireContext())
+					callBack(file)
 				}
 			}
 		}
 	}
 
-	fun shareImage(file: File, context: Context) {
+	private fun shareImage(file: File, context: Context) {
 		val fileUri = FileProvider.getUriForFile(
 			context,
 			context.applicationContext.packageName + ".provider", //(use your app signature + ".provider" )
 			file
 		)
+
 		val shareIntent = Intent(Intent.ACTION_SEND)
 			.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 			.setType("image/jpeg")
@@ -126,13 +136,14 @@ class PhotoWeatherFragment : Fragment() {
 							is NetworkResult.Error -> {
 								binding.progressIndicator.isVisible = false
 								groupWeatherInfo.isVisible = false
-								snackbar = Snackbar.make(
+								Snackbar.make(
 									binding.root,
 									data.error.message
 										?: getString(R.string.unexpected_error_message),
 									Snackbar.LENGTH_INDEFINITE
-								)
-								snackbar.show()
+								).apply {
+									show()
+								}
 							}
 
 							is NetworkResult.Loading -> {
