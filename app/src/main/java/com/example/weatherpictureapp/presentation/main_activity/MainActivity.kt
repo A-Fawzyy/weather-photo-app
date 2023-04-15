@@ -7,7 +7,9 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import com.example.weatherpictureapp.R
 import com.example.weatherpictureapp.databinding.ActivityMainBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
 	private lateinit var binding: ActivityMainBinding

@@ -11,17 +11,36 @@
         android:label="@string/history"
         tools:layout="@layout/fragment_history_list" >
 		<action
-			android:id="@+id/action_nav_home_to_addWeatherPhotoFragment"
-			app:destination="@id/addWeatherPhotoFragment" />
+			android:id="@+id/action_nav_home_to_addPhotoFragment"
+			app:destination="@id/addPhotoFragment" />
 	</fragment>
 	<fragment
-		android:id="@+id/addWeatherPhotoFragment"
-		android:name="com.example.weatherpictureapp.presentation.add_weather_photo.AddWeatherPhotoFragment"
-		android:label="fragment_add_weather_photo"
-		tools:layout="@layout/fragment_add_weather_photo" >
+		android:id="@+id/addPhotoFragment"
+		android:name="com.example.weatherpictureapp.presentation.add_photo.AddPhotoFragment"
+		android:label="fragment_add_photo"
+		tools:layout="@layout/fragment_add_photo" >
 		<argument
 			android:name="lastKnownLocation"
 			app:argType="android.location.Location" />
+		<action
+			android:id="@+id/action_addPhotoFragment_to_photoWeatherFragment"
+			app:destination="@id/photoWeatherFragment" />
 	</fragment>
+	<fragment
+		android:id="@+id/photoWeatherFragment"
+		android:name="com.example.weatherpictureapp.presentation.create_weather_photo.PhotoWeatherFragment"
+		android:label="fragment_photo_weather"
+		tools:layout="@layout/fragment_photo_weather">
+
+		<argument
+			android:name="lastKnownLocation"
+			app:argType="android.location.Location" />
+		<argument
+			android:name="photoUri"
+			app:argType="android.net.Uri"
+			app:nullable="true"
+			android:defaultValue="@null" />
+	</fragment>
+
 
 </navigation>

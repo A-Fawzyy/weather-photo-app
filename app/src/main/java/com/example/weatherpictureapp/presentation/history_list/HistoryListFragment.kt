@@ -27,7 +27,9 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class HistoryListFragment : Fragment() {
 
 	private var _binding: FragmentHistoryListBinding? = null
@@ -43,12 +45,9 @@ class HistoryListFragment : Fragment() {
 	}
 
 	override fun onCreateView(
-		inflater: LayoutInflater,
-		container: ViewGroup?,
-		savedInstanceState: Bundle?
+		inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
 	): View {
-		val homeViewModel =
-			ViewModelProvider(this)[HistoryListViewModel::class.java]
+		val homeViewModel = ViewModelProvider(this)[HistoryListViewModel::class.java]
 
 		_binding = FragmentHistoryListBinding.inflate(inflater, container, false)
 
@@ -61,14 +60,15 @@ class HistoryListFragment : Fragment() {
 			requestNeededPermissions()
 		}
 	}
+
 	private fun requestNeededPermissions() {
 		if (allPermissionsGranted()) {
-			getLastKnownLocation { location ->
-				Log.i(Tag, "lat: ${location.latitude},  long: ${location.longitude}")
-				requireView().findNavController().navigate(
-					HistoryListFragmentDirections.actionNavHomeToAddWeatherPhotoFragment(location)
-				)
-			}
+			getLastKnownLocation(
+				callback = { location ->
+					Log.i(Tag, "lat: ${location.latitude},  long: ${location.longitude}")
+					navigateToAddPhotoFragment(location)
+				},
+			)
 		} else {
 			requestPermissionLauncher.launch(REQUIRED_PERMISSIONS)
 		}
@@ -77,44 +77,46 @@ class HistoryListFragment : Fragment() {
 	private val requestPermissionLauncher =
 		registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
 			if (permissions.all { it.value }) {
-				getLastKnownLocation { location ->
-					requireView().findNavController().navigate(
-						HistoryListFragmentDirections.actionNavHomeToAddWeatherPhotoFragment(location)
-					)
-				}
+				getLastKnownLocation(
+					callback = { location ->
+						navigateToAddPhotoFragment(location)
+					},
+				)
 			} else {
 				Toast.makeText(
-					requireContext(),
-					"Permissions not granted by the user.",
-					Toast.LENGTH_SHORT
+					requireContext(), "Permissions not granted by the user.", Toast.LENGTH_SHORT
 				).show()
 			}
 		}
+
+	private fun navigateToAddPhotoFragment(location: Location) {
+		requireView().findNavController().navigate(
+			HistoryListFragmentDirections.actionNavHomeToAddPhotoFragment(location)
+		)
+	}
+
 	@SuppressLint("MissingPermission")
-	private fun getLastKnownLocation(callback: (Location) -> Unit) {
+	private fun getLastKnownLocation(
+		callback: (Location) -> Unit,
+	) {
 		val isLocationEnabled = isLocationEnabled()
 		if (!isLocationEnabled) {
-			val locationRequest = LocationRequest.Builder(10000)
-				.build()
+			val locationRequest = LocationRequest.Builder(10000).build()
 
 			val locationSettingsRequest: LocationSettingsRequest =
-				LocationSettingsRequest.Builder()
-					.addLocationRequest(locationRequest)
-					.build()
+				LocationSettingsRequest.Builder().addLocationRequest(locationRequest).build()
 
 			val settingsClient = LocationServices.getSettingsClient(requireContext())
 
-			settingsClient.checkLocationSettings(locationSettingsRequest)
-				.addOnSuccessListener {
-					fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
-						callback(location)
-					}
+			settingsClient.checkLocationSettings(locationSettingsRequest).addOnSuccessListener {
+				fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
+					callback(location)
 				}
-				.addOnFailureListener { exception ->
-					if (exception is com.google.android.gms.common.api.ResolvableApiException) {
-						navigateToSettingsToEnableLocation()
-					}
+			}.addOnFailureListener { exception ->
+				if (exception is com.google.android.gms.common.api.ResolvableApiException) {
+					navigateToSettingsToEnableLocation()
 				}
+			}
 
 
 		} else {
@@ -122,10 +124,12 @@ class HistoryListFragment : Fragment() {
 				if (task.isSuccessful && task.result != null) {
 					callback(task.result!!)
 				} else {
+					callback(Location("").apply{
+						latitude = 25.0
+						longitude = 25.0
+					})
 					Toast.makeText(
-						requireContext(),
-						"Unable to get last location",
-						Toast.LENGTH_SHORT
+						requireContext(), "Unable to get last location", Toast.LENGTH_SHORT
 					).show()
 				}
 			}
@@ -134,9 +138,7 @@ class HistoryListFragment : Fragment() {
 
 	private fun navigateToSettingsToEnableLocation() {
 		Toast.makeText(
-			requireContext(),
-			getString(R.string.please_turn_on_location),
-			Toast.LENGTH_SHORT
+			requireContext(), getString(R.string.please_turn_on_location), Toast.LENGTH_SHORT
 		).show()
 		val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
 		startActivity(intent)
@@ -154,16 +156,15 @@ class HistoryListFragment : Fragment() {
 
 
 	companion object {
-		private val REQUIRED_PERMISSIONS =
-			mutableListOf(
-				Manifest.permission.CAMERA,
-				Manifest.permission.ACCESS_FINE_LOCATION,
-				Manifest.permission.ACCESS_COARSE_LOCATION
-			).apply {
-				if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
-					add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-				}
-			}.toTypedArray()
+		private val REQUIRED_PERMISSIONS = mutableListOf(
+			Manifest.permission.CAMERA,
+			Manifest.permission.ACCESS_FINE_LOCATION,
+			Manifest.permission.ACCESS_COARSE_LOCATION
+		).apply {
+			if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+				add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+			}
+		}.toTypedArray()
 		private const val Tag = "HistoryListFragment"
 	}
 

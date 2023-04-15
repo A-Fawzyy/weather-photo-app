@@ -16,6 +16,13 @@
     <string name="capture">Capture</string>
 	<string name="permissions_not_granted_by_the_user">Permissions not granted by the user.</string>
 	<string name="please_turn_on_location">Please, turn on location</string>
-	<!--endregion-->
+	<string name="content_description_capture_weather_photo">captured photo with fetched weather data for your location</string>
+	<string name="weather_status_icon_description">the icon demonstrating the weather status, weather it\'s clear or cloudy, or dusty or rainy ... etc.</string>
+	<string name="feels_like_label">Feels like:</string>
+	<string name="temperature_label">Temperature:</string>
+	<string name="unexpected_error_message">Unexpected Error, Please try again later</string>
+    <string name="share_content_description">share image to other apps</string>
+    <string name="share_image">Share Image</string>
+    <!--endregion-->
 </resources>
 

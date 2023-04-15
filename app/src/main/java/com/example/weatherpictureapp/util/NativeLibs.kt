@@ -1,4 +1,4 @@
-package com.example.weatherpictureapp.utils
+package com.example.weatherpictureapp.util
 
 class NativeLibs {
 	init {

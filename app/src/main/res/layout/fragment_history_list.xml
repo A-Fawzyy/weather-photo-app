@@ -60,8 +60,9 @@
 		android:layout_marginEnd="16dp"
 		android:layout_marginBottom="16dp"
 		android:contentDescription="@string/content_description_fab_add_weather_photo"
-		android:src="@android:drawable/ic_input_add"
-		android:tint="@color/design_default_color_error"
+		android:src="@drawable/baseline_add_24"
+		app:tint="@color/black"
+		app:backgroundTint="@color/yellow"
 		app:layout_constraintBottom_toBottomOf="@+id/cardView"
 		app:layout_constraintEnd_toEndOf="@+id/cardView" />
 </androidx.constraintlayout.widget.ConstraintLayout>

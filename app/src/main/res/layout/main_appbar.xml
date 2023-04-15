@@ -29,7 +29,7 @@
 				android:layout_height="?attr/actionBarSize"
 				android:padding="8dp"
 				android:src="@drawable/ic_camera_logo"
-				app:tint="@color/white"
+				app:tint="@color/yellow"
 				android:contentDescription="@string/content_description_app_logo" />
 
 			<TextView
